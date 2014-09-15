@@ -261,13 +261,7 @@ function ajan_get_site_wide_activities($page='',$per_page=''){
 function ajan_get_activity_by_id($activity_id=0){
 
 	//if no user_id is passed then get the current logged in user id and return his activities
-	if($user_id==0){
-
-		global $user_ID;
-
-		$user_id = $user_ID;
-
-	}
+ 
 	$args = array( 
 		// Filtering
 		'in'           => array($activity_id) ,   // user_id to filter on 

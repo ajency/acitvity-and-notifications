@@ -245,7 +245,7 @@ class AJAN_User_Query {
 			// number of minutes used as an interval
 			case 'online' :
 				$this->uid_name = 'user_id';
-				$sql['select']  = "SELECT u.{$this->uid_name} as id FROM {$ajan->members->table_name_last_activity} u";
+				$sql['select']  = "SELECT u.{$this->uid_name} as id FROM {$ajan->core->table_name_activity} u";
 				$sql['where'][] = $wpdb->prepare( "u.component = %s AND u.type = 'last_activity'", activitynotifications()->members->id );
 				$sql['where'][] = $wpdb->prepare( "u.date_recorded >= DATE_SUB( UTC_TIMESTAMP(), INTERVAL %d MINUTE )", apply_filters( 'ajan_user_query_online_interval', 15 ) );
 				$sql['orderby'] = "ORDER BY u.date_recorded";
@@ -259,7 +259,7 @@ class AJAN_User_Query {
 			case 'newest' :
 			case 'random' :
 				$this->uid_name = 'user_id';
-				$sql['select']  = "SELECT u.{$this->uid_name} as id FROM {$ajan->members->table_name_last_activity} u";
+				$sql['select']  = "SELECT u.{$this->uid_name} as id FROM {$ajan->core->table_name_activity} u";
 				$sql['where'][] = $wpdb->prepare( "u.component = %s AND u.type = 'last_activity'", activitynotifications()->members->id );
 
 				if ( 'newest' == $type ) {
@@ -1320,7 +1320,9 @@ class AJAN_Core_User {
 	 */
 	public static function get_last_activity( $user_id ) {
 		global $wpdb;
+		global $ajan;
 
+        global $user_ID;
 		if ( is_array( $user_id ) ) {
 			$user_ids = wp_parse_id_list( $user_id );
 		} else {
@@ -1345,7 +1347,7 @@ class AJAN_Core_User {
 		$user_ids_sql = implode( ',', $user_ids );
 		$user_count   = count( $user_ids );
 
-		$last_activities = $wpdb->get_results( $wpdb->prepare( "SELECT id, user_id, date_recorded FROM {$ajan->members->table_name_last_activity} WHERE component = %s AND type = 'last_activity' AND user_id IN ({$user_ids_sql}) LIMIT {$user_count}", $ajan->members->id ) );
+		$last_activities = $wpdb->get_results( $wpdb->prepare( "SELECT id, user_id, date_recorded FROM {$ajan->core->table_name_activity} WHERE component = %s AND type = 'last_activity' AND user_id IN ({$user_ids_sql}) LIMIT {$user_count}", $user_ID ) );
 
 		// Re-key
 		$retval = array();
@@ -1375,7 +1377,9 @@ class AJAN_Core_User {
 	public static function update_last_activity( $user_id, $time ) {
 		global $wpdb;
 
-		$table_name = activitynotifications()->members->table_name_last_activity;
+		global $ajan;
+
+		$table_name = $ajan->core->table_name_activity;
 
 		$activity = self::get_last_activity( $user_id );
 

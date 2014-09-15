@@ -123,6 +123,21 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 	 				$activity['content'] = $_POST["content"];
 	 			}
 
+
+	 			if(isset($_POST["item_id"])){
+	 				
+	 				$activity['item_id'] = $_POST["item_id"];
+	 			}
+
+
+	 			if(isset($_POST["secondary_item_id"])){
+	 				
+	 				$activity['secondary_item_id'] = $_POST["secondary_item_id"];
+	 			}
+	 			if(isset($_POST["type"])){
+	 				
+	 				$activity['type'] = $_POST["type"];
+	 			}
 	 			if(isset($_POST["component"])){
 	 				
 	 				$activity['component'] = $_POST["component"];
