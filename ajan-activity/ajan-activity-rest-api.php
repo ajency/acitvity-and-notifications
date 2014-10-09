@@ -81,8 +81,7 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		}
 
 		function get_user_activities($id,$component=''){
- global $user_ID;
-echo $user_ID;
+
 				$args['user_id'] = $id;
 				/*if(is_array($filter)){
 					foreach($filter as $filter_key => $filter_item){
