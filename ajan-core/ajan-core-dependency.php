@@ -719,7 +719,7 @@ function ajan_loggedin_user_username() {
 		global $ajan;
 
 		if ( ajan_loggedin_user_id() ) {
-			$username = ajan_core_get_username( ajan_loggedin_user_id(), $ajan->loggedin_user->userdata->user_nicename, $ajan->loggedin_user->userdata->user_login );
+			$username =   '';//todo ajan_core_get_username( ajan_loggedin_user_id(), $ajan->loggedin_user->userdata->user_nicename, $ajan->loggedin_user->userdata->user_login );
 		} else {
 			$username = '';
 		}
@@ -741,7 +741,7 @@ function ajan_core_get_username( $user_id = 0, $user_nicename = false, $user_log
 	$ajan = activitynotifications();
 
 	// Check cache for user nicename
-	$username = wp_cache_get( 'ajan_user_username_' . $user_id, 'bp' );
+	$username = wp_cache_get( 'ajan_user_username_' . $user_id, 'ajan' );
 	if ( false === $username ) {
 
 		// Cache not found so prepare to update it

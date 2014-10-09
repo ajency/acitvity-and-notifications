@@ -45,6 +45,12 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 				}
 
 			public function register_routes( $routes ) {
+
+			$routes['/user/emails'] = array( 
+				array( array( $this, 'create_user'), WP_JSON_Server::CREATABLE | WP_JSON_Server::ACCEPT_JSON ),
+				 array( array( $this, 'update_user'),      WP_JSON_Server::EDITABLE | WP_JSON_Server::ACCEPT_JSON ),
+				 
+			);
 			$routes['/activity/create'] = array(
 				array( array( $this, 'add_activity'), WP_JSON_Server::CREATABLE | WP_JSON_Server::ACCEPT_JSON ),
 			);
@@ -75,7 +81,8 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		}
 
 		function get_user_activities($id,$component=''){
-
+ global $user_ID;
+echo $user_ID;
 				$args['user_id'] = $id;
 				/*if(is_array($filter)){
 					foreach($filter as $filter_key => $filter_item){
