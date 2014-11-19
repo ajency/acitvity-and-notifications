@@ -51,22 +51,44 @@ add_action( 'ajan_set_activity_action', 'ajan_set_activity_action' );
  * @return $activities_template the activity collection array or false if no activities are found 
  */
 function ajan_has_activities_return($has_activities, $activities_template, $template_args){
- 	
+ 
  	$activities = array();
  	if($has_activities){
  		foreach($activities_template->activities as $activities_template_activity)
  		{
- 			$children = array(); 
- 			
+ 			$children = array();
+ 			 
+ 			$comment_count = count(AJAN_Activity_Activity::get_child_comments($activities_template_activity->id));
+ 
+ 			$activities_template_activity->comment_count = $comment_count;
  			$activities[] = custom_resturn_fields($activities_template_activity);
+
  		}
- 			
+ 	
 		return $activities;
  	}else{
  		return $has_activities; //if activities are not present return false
  	}
 	
 }
+
+
+
+
+/**
+ * return child count for parent
+ *
+ */
+function child_count_for_parent($parentid){
+	$child = ajan_get_activities($args=array('secondary_id'=>$parentid));
+	if ($child!=false){
+		return count($child);
+	}else{
+		return 0;
+	}
+}
+
+
 
 /**
  * return only required fields of activity
@@ -82,6 +104,8 @@ function custom_resturn_fields($activities_template_activity){
 		}
 		
 	}
+
+	
 	return 	array(	'id'=>$activities_template_activity->id,
 				 	'user_id'			=>$activities_template_activity->user_id,
 				 	'component'			=>$activities_template_activity->component,
@@ -91,8 +115,9 @@ function custom_resturn_fields($activities_template_activity){
 				 	'item_id'			=>$activities_template_activity->item_id,
 				 	'secondary_item_id'	=>$activities_template_activity->secondary_item_id,
 				 	'date_recorded'		=>$activities_template_activity->date_recorded,
-				 	'hide_sitewide'		=>$activities_template_activity->hide_sitewide,
-				 	'children'			=>$children,
+				 	//'hide_sitewide'		=>$activities_template_activity->hide_sitewide,
+				 	//'children'			=>$children,
+				 	'comment_count'		=>$activities_template_activity->comment_count,
 
 			 		);
 }
@@ -137,6 +162,59 @@ function ajan_get_user_personal_activities($args){
 
  }
 
+
+
+
+
+
+
+
+
+
+
+ function ajan_get_activities($args){
+
+	
+	/*$defaults = array( 
+		// 'primary_id'			=> '2428',
+		'object'			=> 'job',
+		//'offset'				=> '1',
+		'max'			=> '1',
+		 'secondary_id'			=> '0',
+		);
+ 
+	$args = wp_parse_args( $args, $defaults );*/
+
+	
+	add_filter('ajan_has_activities','ajan_has_activities_return',10,3);
+
+    return ajan_has_activities($args) ;
+
+ }
+
+
+function ajan_get_activity_comments($args){
+
+ 		$activity_comments = array();
+ 		$activity_parents = explode(",", $args['activity_parent']);
+ 		foreach($activity_parents as $activity_parent){
+ 	 		$activities_ids = array();
+			$activities_ids_objects =   AJAN_Activity_Activity::get_child_comments($activity_parent);
+	 		foreach($activities_ids_objects as $activities_ids_object){
+	 			$activities_ids[] = intval($activities_ids_object->id);
+	 		}
+			  
+			  if(count($activities_ids)){
+			  		add_filter('ajan_has_activities','ajan_has_activities_return',10,3);
+ 						$args['in'] = $activities_ids;
+ 						$args['display_comments'] = true; 
+ 			 
+    				$activity_comments = array_merge($activity_comments,ajan_has_activities($args));
+			  }
+ 				
+ 		}
+ 		return $activity_comments;
+}
 
  /**
  * get activities where the user has been mentioned,
@@ -261,7 +339,13 @@ function ajan_get_site_wide_activities($page='',$per_page=''){
 function ajan_get_activity_by_id($activity_id=0){
 
 	//if no user_id is passed then get the current logged in user id and return his activities
- 
+	if($user_id==0){
+
+		global $user_ID;
+
+		$user_id = $user_ID;
+
+	}
 	$args = array( 
 		// Filtering
 		'in'           => array($activity_id) ,   // user_id to filter on 
@@ -310,4 +394,51 @@ function ajan_activity_delete_by_id($id){
 
 	return ajan_activity_delete(array('id'=>$id));
 	
+}
+
+
+
+//Function to get user profile image
+function get_activity_user_profile_pic($id){
+	$profile_pic = apply_filters( 'activity_user_profile_pic', $id );
+  
+	if($profile_pic == $id || $profile_pic==""){
+		$profile_pic = activitynotifications()->plugin_url. "interface/img/non-avatar.jpg";
+	}
+	return $profile_pic;
+}
+
+//Function to get user profile url
+function get_activity_user_profile_url($id){
+	$profile_url = apply_filters( 'activity_user_profile_url', $id );
+	if($profile_url == $id){
+		$profile_url = get_author_posts_url($id);
+	}
+	return $profile_url;
+}
+ 
+//Function to get user display name
+function get_activity_user_display_name($id){
+	$display_name = apply_filters( 'activity_user_display_name', $id );
+ 
+	return $display_name;
+}
+
+//Function to get user profile url
+function get_activity_user_additional_info($id){
+	$additional_info = apply_filters( 'activity_user_additional_info', $id );
+	if($additional_info == $id){
+		$additional_info = '';
+	}
+	return $additional_info;
+}
+
+
+//Function to get user profile url
+function get_activity_user_role($id){
+	$user_role = apply_filters( 'activity_user_role', $id );
+	if($user_role == $id){
+		$user_role = '';
+	}
+	return $user_role;
 }

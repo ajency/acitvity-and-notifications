@@ -1561,6 +1561,10 @@ function ajan_activity_delete_comment( $activity_id, $comment_id ) {
 		ajan_activity_delete( array( 'secondary_item_id' => $comment_id, 'type' => 'activity_comment', 'item_id' => $activity_id ) );
 	}
 
+
+
+
+
 /**
  * Get the permalink for a single activity item.
  *

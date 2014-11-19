@@ -151,7 +151,6 @@ class AJAN_Core extends AJAN_Component {
 		// Notifications table. Included here for legacy purposes. Use
 		// ajan-notifications instead.
 		$ajan->core->table_name_notifications = $ajan->table_prefix . 'ajan_notifications';
-		$ajan->core->table_name_activity = $ajan->table_prefix . 'ajan_activity';
 
 		/**
 		 * Used to determine if user has admin rights on current content. If the
